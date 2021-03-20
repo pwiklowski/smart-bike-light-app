@@ -136,21 +136,21 @@ export class BleService {
 
   async setFrontLight(enabled: boolean) {
     let value = Uint8Array.of(enabled ? 1 : 0);
-    this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_LIGHT_TOGGLE, value);
+    await this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_LIGHT_TOGGLE, value);
   }
 
   async setBackLight(enabled: boolean) {
     let value = Uint8Array.of(enabled ? 1 : 0);
-    this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_BACK_LIGHT_TOGGLE, value);
+    await this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_BACK_LIGHT_TOGGLE, value);
   }
 
   async setFrontLightAnimation(animation: number) {
     let value = Uint8Array.of(animation);
-    this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_LIGHT_MODE, value);
+    await this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_LIGHT_MODE, value);
   }
 
   async setBackLightAnimation(animation: number) {
     let value = Uint8Array.of(animation);
-    this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_BACK_LIGHT_MODE, value);
+    await this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_BACK_LIGHT_MODE, value);
   }
 }

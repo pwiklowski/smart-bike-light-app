@@ -13,14 +13,14 @@ export class CurrentStateComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  turnOn() {
-    this.bleService.setFrontLight(true);
-    this.bleService.setBackLight(true);
+  async turnOn() {
+    await this.bleService.setFrontLight(true);
+    await this.bleService.setBackLight(true);
   }
 
-  turnOff() {
-    this.bleService.setFrontLight(false);
-    this.bleService.setBackLight(false);
+  async turnOff() {
+    await this.bleService.setFrontLight(false);
+    await this.bleService.setBackLight(false);
   }
 
   openSettings() {

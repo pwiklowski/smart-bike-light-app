@@ -1,1 +1,21 @@
-<p>settings works!</p>
+<button mat-icon-button (click)="openCurrentState()" class="back">
+  <mat-icon>keyboard_backspace </mat-icon>
+</button>
+
+<div class="header">Settings</div>
+
+<h1>Front Light</h1>
+<mat-form-field appearance="fill">
+  <mat-label>Front light animation</mat-label>
+  <mat-select (selectionChange)="onFrontAnimationChanged($event)">
+    <mat-option *ngFor="let animation of animations; index as i" value="{{ i }}">{{ animation }}</mat-option>
+  </mat-select>
+</mat-form-field>
+
+Back Light
+<mat-form-field appearance="fill">
+  <mat-label>Back light animation</mat-label>
+  <mat-select (selectionChange)="onBackAnimationChanged($event)">
+    <mat-option *ngFor="let animation of animations; index as i" value="{{ i }}">{{ animation }}</mat-option>
+  </mat-select>
+</mat-form-field>

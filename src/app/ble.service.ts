@@ -1,6 +1,14 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
+export enum LightAnimation {
+  SOLID,
+  PULSE,
+  SNAKE,
+  CHRISTMAS,
+  CHRISTMAS2,
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -19,6 +27,14 @@ export class BleService {
   interval;
 
   SERVICE_LIGHT = '000000ff-0000-1000-8000-00805f9b34fb';
+
+  CHAR_UUID_FRONT_LIGHT_TOGGLE = 0xff01;
+  CHAR_UUID_FRONT_LIGHT_MODE = 0xff02;
+  CHAR_UUID_FRONT_LIGHT_SETTING = 0xff03;
+
+  CHAR_UUID_BACK_LIGHT_TOGGLE = 0xff04;
+  CHAR_UUID_BACK_LIGHT_MODE = 0xff05;
+  CHAR_UUID_BACK_LIGHT_SETTING = 0xff06;
 
   async init() {
     let devices = await navigator.bluetooth.getDevices();
@@ -94,7 +110,10 @@ export class BleService {
     this.server.disconnect();
   }
 
-  async readValue(serviceUuid: string, characteristicUuid: string) {
+  async readValue(
+    serviceUuid: BluetoothServiceUUID,
+    characteristicUuid: BluetoothCharacteristicUUID
+  ): Promise<DataView> {
     //TODO optimize it by storing characterisic references
     const service = await this.server.getPrimaryService(serviceUuid);
     const characteristic = await service.getCharacteristic(characteristicUuid);
@@ -102,5 +121,36 @@ export class BleService {
     return value;
   }
 
+  async setValue(
+    serviceUuid: BluetoothServiceUUID,
+    characteristicUuid: BluetoothCharacteristicUUID,
+    value: BufferSource
+  ) {
+    //TODO optimize it by storing characterisic references
+    const service = await this.server.getPrimaryService(serviceUuid);
+    const characteristic = await service.getCharacteristic(characteristicUuid);
+    await characteristic.writeValue(value);
+  }
+
   async readState() {}
+
+  async setFrontLight(enabled: boolean) {
+    let value = Uint8Array.of(enabled ? 1 : 0);
+    this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_LIGHT_TOGGLE, value);
+  }
+
+  async setBackLight(enabled: boolean) {
+    let value = Uint8Array.of(enabled ? 1 : 0);
+    this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_BACK_LIGHT_TOGGLE, value);
+  }
+
+  async setFrontLightAnimation(animation: number) {
+    let value = Uint8Array.of(animation);
+    this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_LIGHT_MODE, value);
+  }
+
+  async setBackLightAnimation(animation: number) {
+    let value = Uint8Array.of(animation);
+    this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_BACK_LIGHT_MODE, value);
+  }
 }

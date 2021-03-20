@@ -1,15 +1,34 @@
 import { Component, OnInit } from '@angular/core';
+import { BleService } from '../ble.service';
 
 @Component({
   selector: 'app-on-boarding',
   templateUrl: './on-boarding.component.html',
-  styleUrls: ['./on-boarding.component.scss']
+  styleUrls: ['./on-boarding.component.scss'],
 })
-export class OnBoardingComponent implements OnInit {
+export class OnBoardingComponent {
+  state: string;
+  connected: boolean;
+  isPaired: boolean;
+  isDiscoverable: boolean;
 
-  constructor() { }
+  constructor(public bleService: BleService) {
+    this.bleService.connected$.subscribe(
+      (connected: boolean) => {
+        this.connected = connected;
+      },
+      () => {}
+    );
 
-  ngOnInit(): void {
+    this.bleService.isDiscoverable$.subscribe(
+      (isDiscoverable: boolean) => {
+        this.isDiscoverable = isDiscoverable;
+      },
+      () => {}
+    );
   }
 
+  async ngOnInit() {
+    this.isPaired = await this.bleService.isPaired();
+  }
 }

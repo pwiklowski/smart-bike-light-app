@@ -15,6 +15,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { MatSliderModule } from '@angular/material/slider';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [AppComponent, SettingsComponent, CurrentStateComponent, OnBoardingComponent],
@@ -28,6 +29,7 @@ import { MatSliderModule } from '@angular/material/slider';
     MatSelectModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
     MatSliderModule,
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

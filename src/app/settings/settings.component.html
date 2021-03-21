@@ -7,8 +7,8 @@
 <h1>Front Light</h1>
 <mat-form-field appearance="fill">
   <mat-label>Front light animation</mat-label>
-  <mat-select (selectionChange)="onFrontAnimationChanged($event)">
-    <mat-option *ngFor="let animation of animations; index as i" value="{{ i }}">{{ animation }}</mat-option>
+  <mat-select [(value)]="frontMode" (selectionChange)="onFrontAnimationChanged($event)">
+    <mat-option *ngFor="let animation of animations; index as i" [value]="i">{{ animation }}</mat-option>
   </mat-select>
 </mat-form-field>
 Power
@@ -16,7 +16,7 @@ Power
   min="0"
   max="100"
   step="1"
-  value="frontPower"
+  [(ngModel)]="frontPower"
   (input)="frontPower = $event.value"
   (change)="updateFrontLightSettings()"
 ></mat-slider>
@@ -26,7 +26,7 @@ Color red
   max="255"
   step="1"
   value="0"
-  value="frontRed"
+  [(ngModel)]="frontRed"
   (input)="frontRed = $event.value"
   (change)="updateFrontLightSettings()"
 ></mat-slider>
@@ -36,7 +36,7 @@ Color green
   max="255"
   step="1"
   value="0"
-  value="frontGreen"
+  [(ngModel)]="frontGreen"
   (input)="frontGreen = $event.value"
   (change)="updateFrontLightSettings()"
 ></mat-slider>
@@ -46,7 +46,7 @@ Color blue
   max="255"
   step="1"
   value="0"
-  value="frontBlue"
+  [(ngModel)]="frontBlue"
   (input)="frontBlue = $event.value"
   (change)="updateFrontLightSettings()"
 ></mat-slider>
@@ -54,8 +54,8 @@ Color blue
 <h1>Back Light</h1>
 <mat-form-field appearance="fill">
   <mat-label>Back light animation</mat-label>
-  <mat-select (selectionChange)="onBackAnimationChanged($event)">
-    <mat-option *ngFor="let animation of animations; index as i" value="{{ i }}">{{ animation }}</mat-option>
+  <mat-select [(value)]="backMode" (selectionChange)="onBackAnimationChanged($event)">
+    <mat-option *ngFor="let animation of animations; index as i" [value]="i">{{ animation }}</mat-option>
   </mat-select>
 </mat-form-field>
 
@@ -64,7 +64,7 @@ Power
   min="0"
   max="100"
   step="1"
-  value="backPower"
+  [(ngModel)]="backPower"
   (input)="backPower = $event.value"
   (change)="updateBackLightSettings()"
 ></mat-slider>
@@ -74,7 +74,7 @@ Color red
   max="255"
   step="1"
   value="0"
-  value="backRed"
+  [(ngModel)]="backRed"
   (input)="backRed = $event.value"
   (change)="updateBackLightSettings()"
 ></mat-slider>
@@ -84,7 +84,7 @@ Color green
   max="255"
   step="1"
   value="0"
-  value="backGreen"
+  [(ngModel)]="backGreen"
   (input)="backGreen = $event.value"
   (change)="updateBackLightSettings()"
 ></mat-slider>
@@ -94,7 +94,7 @@ Color blue
   max="255"
   step="1"
   value="0"
-  value="=backBlue"
+  [(ngModel)]="backBlue"
   (input)="backBlue = $event.value"
   (change)="updateBackLightSettings()"
 ></mat-slider>

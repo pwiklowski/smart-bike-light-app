@@ -97,7 +97,6 @@ export class BleService {
     console.log('Connecting to GATT Server...', this.device);
     this.server = await this.device.gatt.connect();
     this.device.addEventListener('gattserverdisconnected', this.onDisconnected.bind(this));
-    this.readState();
     this.connected$.next(true);
   }
 
@@ -111,7 +110,7 @@ export class BleService {
     this.server.disconnect();
   }
 
-  async readValue(
+  async getValue(
     serviceUuid: BluetoothServiceUUID,
     characteristicUuid: BluetoothCharacteristicUUID
   ): Promise<DataView> {
@@ -132,8 +131,6 @@ export class BleService {
     const characteristic = await service.getCharacteristic(characteristicUuid);
     await characteristic.writeValue(value);
   }
-
-  async readState() {}
 
   async setFrontLight(enabled: boolean) {
     let value = Uint8Array.of(enabled ? 1 : 0);
@@ -163,5 +160,37 @@ export class BleService {
   async setBackLightAnimationParameters(power: number, red: number, green: number, blue: number) {
     let value = Uint8Array.of(power, red, green, blue);
     await this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_BACK_LIGHT_SETTING, value);
+  }
+
+  async getFrontLightAnimation() {
+    let value = await this.getValue(this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_LIGHT_MODE);
+    return value.getUint8(0);
+  }
+
+  async getBackLightAnimation() {
+    let value = await this.getValue(this.SERVICE_LIGHT, this.CHAR_UUID_BACK_LIGHT_MODE);
+    return value.getUint8(0);
+  }
+
+  async getFrontLightAnimationParameters() {
+    let value = await this.getValue(this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_LIGHT_SETTING);
+
+    const power = value.getUint8(0);
+    const red = value.getUint8(1);
+    const green = value.getUint8(2);
+    const blue = value.getUint8(3);
+
+    return [power, red, green, blue];
+  }
+
+  async getBackLightAnimationParameters() {
+    let value = await this.getValue(this.SERVICE_LIGHT, this.CHAR_UUID_BACK_LIGHT_SETTING);
+
+    const power = value.getUint8(0);
+    const red = value.getUint8(1);
+    const green = value.getUint8(2);
+    const blue = value.getUint8(3);
+
+    return [power, red, green, blue];
   }
 }

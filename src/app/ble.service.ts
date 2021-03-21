@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { GuardsCheckEnd } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 
 export enum LightAnimation {
@@ -152,5 +153,15 @@ export class BleService {
   async setBackLightAnimation(animation: number) {
     let value = Uint8Array.of(animation);
     await this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_BACK_LIGHT_MODE, value);
+  }
+
+  async setFrontLightAnimationParameters(power: number, red: number, green: number, blue: number) {
+    let value = Uint8Array.of(power, red, green, blue);
+    await this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_LIGHT_SETTING, value);
+  }
+
+  async setBackLightAnimationParameters(power: number, red: number, green: number, blue: number) {
+    let value = Uint8Array.of(power, red, green, blue);
+    await this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_BACK_LIGHT_SETTING, value);
   }
 }

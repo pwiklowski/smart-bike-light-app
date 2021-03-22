@@ -2,5 +2,10 @@
   <mat-icon>settings</mat-icon>
 </button>
 
+<div class="battery">
+  <div class="battery-level" [style.width.px]="batteryLevelWidth"></div>
+  <div class="battery-percent">{{ batteryPercent }} %</div>
+</div>
+
 <button mat-raised-button color="primary" (click)="turnOn()">ON</button>
 <button mat-raised-button color="primary" (click)="turnOff()">OFF</button>

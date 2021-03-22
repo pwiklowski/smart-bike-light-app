@@ -9,9 +9,14 @@ import { EnumValues } from 'enum-values';
   styleUrls: ['./current-state.component.scss'],
 })
 export class CurrentStateComponent implements OnInit {
+  batteryLevelWidth: number = 0;
+  batteryPercent: number;
   constructor(private bleService: BleService, private router: Router) {}
 
-  ngOnInit(): void {}
+  async ngOnInit() {
+    this.batteryPercent = await this.bleService.getBatteryLevel();
+    this.setBatteryProgress(this.batteryPercent);
+  }
 
   async turnOn() {
     await this.bleService.setFrontLight(true);
@@ -25,5 +30,10 @@ export class CurrentStateComponent implements OnInit {
 
   openSettings() {
     this.router.navigate(['/settings']);
+  }
+
+  setBatteryProgress(percent: number) {
+    const MAX_WIDTH = 154;
+    this.batteryLevelWidth = (percent / 100) * MAX_WIDTH;
   }
 }

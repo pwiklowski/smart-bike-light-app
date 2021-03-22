@@ -20,3 +20,32 @@
   top: 10px;
   right: 10px;
 }
+
+.battery {
+  width: 200px;
+  height: 200px;
+  background-image: url("../../assets/charging.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.battery-level {
+  position: relative;
+  background-color: greenyellow;
+  top: 48px;
+  height: 96px;
+  left: 15px;
+  width: 154px;
+  border-radius: 8px;
+  color: black;
+  font-size: 50px;
+}
+
+.battery-percent {
+  position: absolute;
+  bottom: 15px;
+  font-size: 24px;
+  width: 100%;
+  text-align: center;
+}

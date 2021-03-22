@@ -1,6 +1,6 @@
 {
-  "name": "smart-bike-light",
-  "short_name": "smart-bike-light",
+  "name": "Smart Bike Light",
+  "short_name": "SBL",
   "theme_color": "#1976d2",
   "background_color": "#fafafa",
   "display": "standalone",
@@ -269,4 +269,3 @@
     }
   ]
 }
-

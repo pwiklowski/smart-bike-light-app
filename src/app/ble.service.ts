@@ -27,6 +27,8 @@ export class BleService {
 
   interval;
 
+  DEVICE_NAME = 'smart-bike-light';
+
   SERVICE_LIGHT = '000000ff-0000-1000-8000-00805f9b34fb';
 
   CHAR_UUID_FRONT_LIGHT_TOGGLE = 0xff01;
@@ -38,13 +40,19 @@ export class BleService {
   CHAR_UUID_BACK_LIGHT_SETTING = 0xff06;
 
   async init() {
-    let devices = await navigator.bluetooth.getDevices();
-    console.log('init', devices);
+    let devices = await this.getPairedDevices();
+
     if (devices.length > 0) {
       const device = devices[0];
       await this.watchForAdvertisments(device);
       await this.connect(device);
     }
+  }
+
+  async getPairedDevices() {
+    let devices = await navigator.bluetooth.getDevices();
+
+    return devices.filter((device) => device.name === this.DEVICE_NAME);
   }
 
   async watchForAdvertisments(device) {
@@ -82,7 +90,7 @@ export class BleService {
   }
 
   async connectToDevice() {
-    let devices = await navigator.bluetooth.getDevices();
+    let devices = await this.getPairedDevices();
     console.log('init', devices);
     if (devices.length > 0) {
       this.connect(devices[0]);

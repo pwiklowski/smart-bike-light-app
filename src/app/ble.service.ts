@@ -30,6 +30,7 @@ export class BleService {
   DEVICE_NAME = 'smart-bike-light';
 
   SERVICE_LIGHT = '000000ff-0000-1000-8000-00805f9b34fb';
+  SERVICE_BATTERY = '0000180f-0000-1000-8000-00805f9b34fb';
 
   CHAR_UUID_FRONT_LIGHT_TOGGLE = 0xff01;
   CHAR_UUID_FRONT_LIGHT_MODE = 0xff02;
@@ -38,6 +39,8 @@ export class BleService {
   CHAR_UUID_BACK_LIGHT_TOGGLE = 0xff04;
   CHAR_UUID_BACK_LIGHT_MODE = 0xff05;
   CHAR_UUID_BACK_LIGHT_SETTING = 0xff06;
+
+  CHAR_UUID_BATTERY_LEVEL = 0x2a19;
 
   async init() {
     let devices = await this.getPairedDevices();
@@ -82,8 +85,8 @@ export class BleService {
 
   async scanAndConnect() {
     const device = await navigator.bluetooth.requestDevice({
-      filters: [{ name: 'smart-bike-light' }],
-      optionalServices: [this.SERVICE_LIGHT],
+      filters: [{ name: this.DEVICE_NAME }],
+      optionalServices: [this.SERVICE_LIGHT, this.SERVICE_BATTERY],
     });
 
     this.connect(device);
@@ -200,5 +203,10 @@ export class BleService {
     const blue = value.getUint8(3);
 
     return [power, red, green, blue];
+  }
+
+  async getBatteryLevel() {
+    let value = await this.getValue(this.SERVICE_BATTERY, this.CHAR_UUID_BATTERY_LEVEL);
+    return value.getUint8(0);
   }
 }

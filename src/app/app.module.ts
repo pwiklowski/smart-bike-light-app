@@ -16,6 +16,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { MatSliderModule } from '@angular/material/slider';
 import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
 
 @NgModule({
   declarations: [AppComponent, SettingsComponent, CurrentStateComponent, OnBoardingComponent],
@@ -30,6 +31,7 @@ import { FormsModule } from '@angular/forms';
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
     MatSliderModule,
     FormsModule,
+    IonicModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent],

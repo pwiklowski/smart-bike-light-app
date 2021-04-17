@@ -1,0 +1,7 @@
+{
+  "name": "smart-bike-light",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

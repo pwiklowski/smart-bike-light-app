@@ -1,0 +1,14 @@
+{
+  "appId": "io.ionic.starter",
+  "appName": "smart-bike-light",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {},
+  "linuxAndroidStudioPath": "/home/pwiklowski/android-studio/bin/studio.sh"
+}

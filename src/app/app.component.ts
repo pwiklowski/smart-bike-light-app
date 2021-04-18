@@ -1,5 +1,5 @@
 import { BleService } from './ble.service';
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -12,18 +12,19 @@ export class AppComponent {
   state: string;
   connected: boolean;
 
-  constructor(public bleService: BleService, private router: Router) {
+  constructor(public bleService: BleService, private router: Router, private ngZone: NgZone) {
     this.bleService.connected$.subscribe(
       (connected: boolean) => {
-        if (connected) {
-          this.router.navigate(['/state']);
-        } else {
-          this.router.navigate(['/']);
-        }
+        this.ngZone.run(() => {
+          if (connected) {
+            this.router.navigate(['/state']);
+          } else {
+            this.router.navigate(['/']);
+          }
+        });
       },
       () => {}
     );
-    ``;
   }
 
   async ngOnInit() {

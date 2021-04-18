@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { GuardsCheckEnd } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
+import { BLE } from '@ionic-native/ble/ngx';
 
 export enum LightAnimation {
   SOLID,
@@ -14,13 +14,10 @@ export enum LightAnimation {
   providedIn: 'root',
 })
 export class BleService {
-  device: BluetoothDevice;
-  server: BluetoothRemoteGATTServer;
-  services: Array<BluetoothRemoteGATTService>;
+  device;
 
   connected$ = new BehaviorSubject<boolean>(false);
   isDiscoverable$ = new BehaviorSubject<boolean>(false);
-  abortController = new AbortController();
 
   DEVICE_LOSS_TIMEOUT = 5000;
   deviceLossTimout;
@@ -40,32 +37,16 @@ export class BleService {
   CHAR_UUID_BACK_LIGHT_MODE = '10c96912-75a0-e2a0-fe48-125237297f2c';
   CHAR_UUID_BACK_LIGHT_SETTING = '10c96913-75a0-e2a0-fe48-125237297f2c';
 
-  CHAR_UUID_BATTERY_LEVEL = 0x2a19;
+  CHAR_UUID_BATTERY_LEVEL = '2a19';
 
-  async init() {
-    let devices = await this.getPairedDevices();
+  constructor(private ble: BLE) {}
 
-    if (devices.length > 0) {
-      const device = devices[0];
-      await this.watchForAdvertisments(device);
-      await this.connect(device);
-    }
-  }
+  async init() {}
 
   async getPairedDevices() {
     let devices = await navigator.bluetooth.getDevices();
 
     return devices.filter((device) => device.name === this.DEVICE_NAME);
-  }
-
-  async watchForAdvertisments(device) {
-    this.abortController = new AbortController();
-    device.addEventListener('advertisementreceived', this.advertismentReceived.bind(this));
-    await device.watchAdvertisements({ signal: this.abortController.signal });
-  }
-  async unwatchForAdvertisments() {
-    this.device.removeEventListener('advertisementreceived', this.advertismentReceived.bind(this));
-    this.abortController.abort();
   }
 
   async advertismentReceived(event: any) {
@@ -79,68 +60,62 @@ export class BleService {
   }
 
   async isPaired() {
-    let devices = await navigator.bluetooth.getDevices();
-    return devices.length > 0;
+    // let devices = await navigator.bluetooth.getDevices();
+    // return devices.length > 0;
+
+    return true;
   }
 
   async scanAndConnect() {
-    const device = await navigator.bluetooth.requestDevice({
-      filters: [{ name: this.DEVICE_NAME }],
-      optionalServices: [this.SERVICE_LIGHT, this.SERVICE_BATTERY],
-    });
+    console.log('scan and connect');
+    this.ble.scan([this.SERVICE_LIGHT, this.SERVICE_BATTERY], 10).subscribe(
+      (device) => {
+        console.log(JSON.stringify(device));
 
-    this.connect(device);
+        this.ble.autoConnect(device.id, this.onConnected.bind(this), this.onDisconnected.bind(this));
+      },
+      (error) => {
+        console.error('error:', error);
+      },
+      () => {
+        console.log('scan completed');
+      }
+    );
   }
 
   async connectToDevice() {
-    let devices = await this.getPairedDevices();
-    console.log('init', devices);
-    if (devices.length > 0) {
-      this.connect(devices[0]);
-    }
+    this.connect('CD:52:BA:28:53:3D');
   }
 
-  async connect(device) {
+  async connect(deviceMac) {
+    console.log('connect to', deviceMac);
+    this.ble.autoConnect(deviceMac, this.onConnected.bind(this), this.onDisconnected.bind(this));
+  }
+
+  onConnected(device) {
     this.device = device;
-
-    this.unwatchForAdvertisments();
-
-    console.log('Connecting to GATT Server...', this.device);
-    this.server = await this.device.gatt.connect();
-    this.device.addEventListener('gattserverdisconnected', this.onDisconnected.bind(this));
+    console.log('on connected');
     this.connected$.next(true);
   }
 
-  onDisconnected() {
+  onDisconnected(device) {
     console.log('on disconnected');
     this.connected$.next(false);
     this.init();
   }
 
   async disconnect() {
-    this.server.disconnect();
+    this.ble.disconnect(this.device?.id);
   }
 
-  async getValue(
-    serviceUuid: BluetoothServiceUUID,
-    characteristicUuid: BluetoothCharacteristicUUID
-  ): Promise<DataView> {
-    //TODO optimize it by storing characterisic references
-    const service = await this.server.getPrimaryService(serviceUuid);
-    const characteristic = await service.getCharacteristic(characteristicUuid);
-    const value = await characteristic.readValue();
-    return value;
+  async getValue(serviceUuid: string, characteristicUuid: string): Promise<Uint8Array> {
+    const buffer = await this.ble.read(this.device.id, serviceUuid, characteristicUuid);
+    return new Uint8Array(buffer);
   }
 
-  async setValue(
-    serviceUuid: BluetoothServiceUUID,
-    characteristicUuid: BluetoothCharacteristicUUID,
-    value: BufferSource
-  ) {
-    //TODO optimize it by storing characterisic references
-    const service = await this.server.getPrimaryService(serviceUuid);
-    const characteristic = await service.getCharacteristic(characteristicUuid);
-    await characteristic.writeValue(value);
+  async setValue(serviceUuid: string, characteristicUuid: string, value: Uint8Array) {
+    console.log('set', characteristicUuid);
+    return this.ble.writeWithoutResponse(this.device.id, serviceUuid, characteristicUuid, value.buffer);
   }
 
   async setFrontLight(enabled: boolean) {
@@ -175,21 +150,21 @@ export class BleService {
 
   async getFrontLightAnimation() {
     let value = await this.getValue(this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_LIGHT_MODE);
-    return value.getUint8(0);
+    return value[0];
   }
 
   async getBackLightAnimation() {
     let value = await this.getValue(this.SERVICE_LIGHT, this.CHAR_UUID_BACK_LIGHT_MODE);
-    return value.getUint8(0);
+    return value[0];
   }
 
   async getFrontLightAnimationParameters() {
     let value = await this.getValue(this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_LIGHT_SETTING);
 
-    const power = value.getUint8(0);
-    const red = value.getUint8(1);
-    const green = value.getUint8(2);
-    const blue = value.getUint8(3);
+    const power = value[0];
+    const red = value[1];
+    const green = value[2];
+    const blue = value[3];
 
     return [power, red, green, blue];
   }
@@ -197,16 +172,16 @@ export class BleService {
   async getBackLightAnimationParameters() {
     let value = await this.getValue(this.SERVICE_LIGHT, this.CHAR_UUID_BACK_LIGHT_SETTING);
 
-    const power = value.getUint8(0);
-    const red = value.getUint8(1);
-    const green = value.getUint8(2);
-    const blue = value.getUint8(3);
+    const power = value[0];
+    const red = value[1];
+    const green = value[2];
+    const blue = value[3];
 
     return [power, red, green, blue];
   }
 
   async getBatteryLevel() {
     let value = await this.getValue(this.SERVICE_BATTERY, this.CHAR_UUID_BATTERY_LEVEL);
-    return value.getUint8(0);
+    return value[0];
   }
 }

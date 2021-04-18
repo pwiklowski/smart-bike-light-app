@@ -17,6 +17,7 @@ import { environment } from '../environments/environment';
 import { MatSliderModule } from '@angular/material/slider';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
+import { BLE } from '@ionic-native/ble/ngx';
 
 @NgModule({
   declarations: [AppComponent, SettingsComponent, CurrentStateComponent, OnBoardingComponent],
@@ -33,7 +34,7 @@ import { IonicModule } from '@ionic/angular';
     FormsModule,
     IonicModule.forRoot(),
   ],
-  providers: [],
+  providers: [BLE],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

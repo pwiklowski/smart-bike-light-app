@@ -1,100 +1,160 @@
-<button mat-icon-button (click)="openCurrentState()" class="back">
-  <mat-icon>keyboard_backspace </mat-icon>
-</button>
+<ion-app>
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-back-button defaultHref="/state"></ion-back-button>
+      </ion-buttons>
+      <ion-title>Settings</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content fullscreen>
+    <ion-list>
+      <ion-list-header>
+        <ion-label>Front Light</ion-label>
+      </ion-list-header>
 
-<div class="header">Settings</div>
+      <ion-item>
+        <ion-label>Front light animation</ion-label>
+        <ion-select [(ngModel)]="frontMode" interface="action-sheet" (ngModelChange)="onFrontAnimationChanged($event)">
+          <ion-select-option *ngFor="let animation of animations; index as i" [value]="i">
+            {{ animation }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
 
-<h1>Front Light</h1>
-<mat-form-field appearance="fill">
-  <mat-label>Front light animation</mat-label>
-  <mat-select [(value)]="frontMode" (selectionChange)="onFrontAnimationChanged($event)">
-    <mat-option *ngFor="let animation of animations; index as i" [value]="i">{{ animation }}</mat-option>
-  </mat-select>
-</mat-form-field>
-Power
-<mat-slider
-  min="0"
-  max="100"
-  step="1"
-  [(ngModel)]="frontPower"
-  (input)="frontPower = $event.value"
-  (change)="updateFrontLightSettings()"
-></mat-slider>
-Color red
-<mat-slider
-  min="0"
-  max="255"
-  step="1"
-  value="0"
-  [(ngModel)]="frontRed"
-  (input)="frontRed = $event.value"
-  (change)="updateFrontLightSettings()"
-></mat-slider>
-Color green
-<mat-slider
-  min="0"
-  max="255"
-  step="1"
-  value="0"
-  [(ngModel)]="frontGreen"
-  (input)="frontGreen = $event.value"
-  (change)="updateFrontLightSettings()"
-></mat-slider>
-Color blue
-<mat-slider
-  min="0"
-  max="255"
-  step="1"
-  value="0"
-  [(ngModel)]="frontBlue"
-  (input)="frontBlue = $event.value"
-  (change)="updateFrontLightSettings()"
-></mat-slider>
+      <ion-item>
+        <ion-range
+          min="0"
+          max="100"
+          step="1"
+          snaps="true"
+          pin="true"
+          debounce="100"
+          [(ngModel)]="frontPower"
+          (ngModelChange)="updateFrontLightSettings($event)"
+        >
+          <ion-icon slot="start" size="small" name="sunny"></ion-icon>
+          <ion-icon slot="end" name="sunny"></ion-icon>
+        </ion-range>
+      </ion-item>
+      <ion-item>
+        <ion-range
+          min="0"
+          max="255"
+          step="1"
+          snaps="true"
+          pin="true"
+          debounce="100"
+          [(ngModel)]="frontRed"
+          (ngModelChange)="updateFrontLightSettings($event)"
+        >
+          <ion-icon slot="start" size="small" name="sunny"></ion-icon>
+          <ion-icon slot="end" name="sunny"></ion-icon>
+        </ion-range>
+      </ion-item>
+      <ion-item>
+        <ion-range
+          min="0"
+          max="255"
+          step="1"
+          snaps="true"
+          pin="true"
+          debounce="100"
+          [(ngModel)]="frontGreen"
+          (ngModelChange)="updateFrontLightSettings($event)"
+        >
+          <ion-icon slot="start" size="small" name="sunny"></ion-icon>
+          <ion-icon slot="end" name="sunny"></ion-icon>
+        </ion-range>
+      </ion-item>
+      <ion-item>
+        <ion-range
+          min="0"
+          max="255"
+          step="1"
+          snaps="true"
+          pin="true"
+          debounce="100"
+          [(ngModel)]="frontBlue"
+          (ngModelChange)="updateFrontLightSettings($event)"
+        >
+          <ion-icon slot="start" size="small" name="sunny"></ion-icon>
+          <ion-icon slot="end" name="sunny"></ion-icon>
+        </ion-range>
+      </ion-item>
 
-<h1>Back Light</h1>
-<mat-form-field appearance="fill">
-  <mat-label>Back light animation</mat-label>
-  <mat-select [(value)]="backMode" (selectionChange)="onBackAnimationChanged($event)">
-    <mat-option *ngFor="let animation of animations; index as i" [value]="i">{{ animation }}</mat-option>
-  </mat-select>
-</mat-form-field>
+      <ion-list-header>
+        <ion-label>Back Light</ion-label>
+      </ion-list-header>
+      <ion-item>
+        <ion-label>Back light animation</ion-label>
+        <ion-select [(ngModel)]="backMode" interface="action-sheet" (ngModelChange)="onBackAnimationChanged($event)">
+          <ion-select-option *ngFor="let animation of animations; index as i" [value]="i">
+            {{ animation }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
 
-Power
-<mat-slider
-  min="0"
-  max="100"
-  step="1"
-  [(ngModel)]="backPower"
-  (input)="backPower = $event.value"
-  (change)="updateBackLightSettings()"
-></mat-slider>
-Color red
-<mat-slider
-  min="0"
-  max="255"
-  step="1"
-  value="0"
-  [(ngModel)]="backRed"
-  (input)="backRed = $event.value"
-  (change)="updateBackLightSettings()"
-></mat-slider>
-Color green
-<mat-slider
-  min="0"
-  max="255"
-  step="1"
-  value="0"
-  [(ngModel)]="backGreen"
-  (input)="backGreen = $event.value"
-  (change)="updateBackLightSettings()"
-></mat-slider>
-Color blue
-<mat-slider
-  min="0"
-  max="255"
-  step="1"
-  value="0"
-  [(ngModel)]="backBlue"
-  (input)="backBlue = $event.value"
-  (change)="updateBackLightSettings()"
-></mat-slider>
+      <ion-item>
+        <ion-range
+          min="0"
+          max="100"
+          step="1"
+          snaps="true"
+          pin="true"
+          debounce="100"
+          [(ngModel)]="backPower"
+          (ngModelChange)="updateBackLightSettings($event)"
+        >
+          <ion-icon slot="start" size="small" name="sunny"></ion-icon>
+          <ion-icon slot="end" name="sunny"></ion-icon>
+        </ion-range>
+      </ion-item>
+      <ion-item>
+        <ion-range
+          min="0"
+          max="255"
+          step="1"
+          snaps="true"
+          pin="true"
+          debounce="100"
+          [(ngModel)]="backRed"
+          (ngModelChange)="updateBackLightSettings($event)"
+        >
+          <ion-icon slot="start" size="small" name="sunny"></ion-icon>
+          <ion-icon slot="end" name="sunny"></ion-icon>
+        </ion-range>
+      </ion-item>
+      <ion-item>
+        <ion-range
+          min="0"
+          max="255"
+          step="1"
+          snaps="true"
+          pin="true"
+          debounce="100"
+          [(ngModel)]="backGreen"
+          (ngModelChange)="updateBackLightSettings($event)"
+        >
+          <ion-icon slot="start" size="small" name="sunny"></ion-icon>
+          <ion-icon slot="end" name="sunny"></ion-icon>
+        </ion-range>
+      </ion-item>
+      <ion-item>
+        <ion-range
+          min="0"
+          max="255"
+          step="1"
+          snaps="true"
+          pin="true"
+          debounce="100"
+          [(ngModel)]="backBlue"
+          (ngModelChange)="updateBackLightSettings($event)"
+        >
+          <ion-icon slot="start" size="small" name="sunny"></ion-icon>
+          <ion-icon slot="end" name="sunny"></ion-icon>
+        </ion-range>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-app>

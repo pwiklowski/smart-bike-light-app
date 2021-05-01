@@ -1,7 +1,8 @@
 import { Router } from '@angular/router';
 import { BleService, LightAnimation } from './../ble.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { EnumValues } from 'enum-values';
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-settings',
@@ -23,46 +24,63 @@ export class SettingsComponent implements OnInit {
   backGreen = 0;
   backBlue = 0;
 
-  constructor(private bleService: BleService, private router: Router) {
+  constructor(
+    private bleService: BleService,
+    private router: Router,
+    private loadingController: LoadingController,
+    private ngZone: NgZone
+  ) {
     this.animations = EnumValues.getNames(LightAnimation);
   }
 
   async ngOnInit() {
-    this.frontMode = await this.bleService.getFrontLightAnimation();
-    this.backMode = await this.bleService.getBackLightAnimation();
+    console.log('init');
+    const loading = await this.loadingController.create({
+      message: 'Please wait...',
+    });
 
-    console.log(this.frontMode, this.backMode);
+    this.ngZone.run(async () => {
+      await loading.present();
 
-    [
-      this.frontPower,
-      this.frontRed,
-      this.frontGreen,
-      this.frontBlue,
-    ] = await this.bleService.getFrontLightAnimationParameters();
+      this.frontMode = await this.bleService.getFrontLightAnimation();
+      this.backMode = await this.bleService.getBackLightAnimation();
 
-    [
-      this.backPower,
-      this.backRed,
-      this.backGreen,
-      this.backBlue,
-    ] = await this.bleService.getBackLightAnimationParameters();
+      [
+        this.frontPower,
+        this.frontRed,
+        this.frontGreen,
+        this.frontBlue,
+      ] = await this.bleService.getFrontLightAnimationParameters();
+
+      [
+        this.backPower,
+        this.backRed,
+        this.backGreen,
+        this.backBlue,
+      ] = await this.bleService.getBackLightAnimationParameters();
+
+      console.log(this.frontMode, this.frontPower, this.frontRed, this.frontGreen, this.frontBlue);
+      console.log(this.backMode, this.backPower, this.backRed, this.backGreen, this.backBlue);
+
+      console.log('loaded');
+
+      await loading.dismiss();
+    });
   }
 
   async onFrontAnimationChanged($event) {
-    console.log($event);
-    await this.bleService.setFrontLightAnimation($event.value);
+    await this.bleService.setFrontLightAnimation(this.frontMode);
   }
 
   async onBackAnimationChanged($event) {
-    console.log($event);
-    await this.bleService.setBackLightAnimation($event.value);
+    await this.bleService.setBackLightAnimation(this.backMode);
   }
 
   openCurrentState() {
     this.router.navigate(['/state']);
   }
 
-  async updateFrontLightSettings() {
+  async updateFrontLightSettings($event = null) {
     await this.bleService.setFrontLightAnimationParameters(
       this.frontPower,
       this.frontRed,
@@ -71,7 +89,7 @@ export class SettingsComponent implements OnInit {
     );
   }
 
-  async updateBackLightSettings() {
+  async updateBackLightSettings($event = null) {
     await this.bleService.setBackLightAnimationParameters(this.backPower, this.backRed, this.backGreen, this.backBlue);
   }
 }

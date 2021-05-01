@@ -114,7 +114,7 @@ export class BleService {
   }
 
   async setValue(serviceUuid: string, characteristicUuid: string, value: Uint8Array) {
-    console.log('set', characteristicUuid);
+    console.log('set', characteristicUuid, value);
     return this.ble.writeWithoutResponse(this.device.id, serviceUuid, characteristicUuid, value.buffer);
   }
 

@@ -2,6 +2,10 @@
   <mat-icon>settings</mat-icon>
 </button>
 
+<button mat-icon-button (click)="disconnect()" class="disconnect">
+  <mat-icon>arrow_back</mat-icon>
+</button>
+
 <div class="battery">
   <div class="battery-level" [style.width.px]="batteryLevelWidth"></div>
   <div class="battery-percent">{{ batteryPercent }} %</div>

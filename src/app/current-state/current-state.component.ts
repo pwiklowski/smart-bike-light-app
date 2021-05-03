@@ -28,6 +28,11 @@ export class CurrentStateComponent implements OnInit {
     await this.bleService.setBackLight(false);
   }
 
+  async disconnect() {
+    await this.bleService.disconnect();
+    this.router.navigate(['/']);
+  }
+
   openSettings() {
     this.router.navigate(['/settings']);
   }

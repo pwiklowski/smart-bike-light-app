@@ -95,7 +95,7 @@ export class BleService {
   }
 
   async disconnect() {
-    this.ble.disconnect(this.device?.id);
+    return this.ble.disconnect(this.device?.id);
   }
 
   async getValue(serviceUuid: string, characteristicUuid: string): Promise<Uint8Array> {

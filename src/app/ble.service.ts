@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { BLE } from '@ionic-native/ble/ngx';
+import { parseAdvertisingData, GapAdType } from './ble.utils';
 
 export enum LightAnimation {
   SOLID,
@@ -66,30 +67,19 @@ export class BleService {
     return true;
   }
 
-  async scanAndConnect() {
-    console.log('scan and connect');
-    this.ble.scan([this.SERVICE_LIGHT, this.SERVICE_BATTERY], 10).subscribe(
-      (device) => {
-        console.log(JSON.stringify(device));
-
-        this.ble.autoConnect(device.id, this.onConnected.bind(this), this.onDisconnected.bind(this));
-      },
-      (error) => {
-        console.error('error:', error);
-      },
-      () => {
-        console.log('scan completed');
-      }
-    );
+  scanStart() {
+    return this.ble.startScanWithOptions([this.SERVICE_LIGHT, this.SERVICE_BATTERY], { reportDuplicates: true });
   }
 
-  async connectToDevice() {
-    this.connect('CD:52:BA:28:53:3D');
+  async scanStop() {
+    this.ble.stopScan();
   }
 
   async connect(deviceMac) {
-    console.log('connect to', deviceMac);
-    this.ble.autoConnect(deviceMac, this.onConnected.bind(this), this.onDisconnected.bind(this));
+    this.ble.connect(deviceMac).subscribe(
+      (device) => this.onConnected(device),
+      (device) => this.onDisconnected(device)
+    );
   }
 
   onConnected(device) {

@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
+import { Subject } from 'rxjs';
 import { BleService } from '../ble.service';
+import { BleScanResult, GapAdType, parseAdvertisingData } from '../ble.utils';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-on-boarding',
@@ -10,25 +13,38 @@ export class OnBoardingComponent {
   state: string;
   connected: boolean;
   isPaired: boolean;
-  isDiscoverable: boolean;
+  onDestroy$ = new Subject();
 
-  constructor(public bleService: BleService) {
+  devices = new Map<string, BleScanResult>();
+
+  constructor(public bleService: BleService, private ngZone: NgZone) {
     this.bleService.connected$.subscribe(
       (connected: boolean) => {
         this.connected = connected;
       },
       () => {}
     );
+  }
 
-    this.bleService.isDiscoverable$.subscribe(
-      (isDiscoverable: boolean) => {
-        this.isDiscoverable = isDiscoverable;
-      },
-      () => {}
-    );
+  connect(device_uuid: string) {
+    this.bleService.connect(device_uuid);
   }
 
   async ngOnInit() {
     this.isPaired = await this.bleService.isPaired();
+
+    this.bleService
+      .scanStart()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe((device) => {
+        this.ngZone.run(() => {
+          this.devices.set(device.id, new BleScanResult(device));
+        });
+      });
+  }
+
+  async ngOnDestroy() {
+    this.onDestroy$.next();
+    await this.bleService.scanStop();
   }
 }

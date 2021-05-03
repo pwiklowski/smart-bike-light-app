@@ -1,7 +1,10 @@
 <div class="app-name">Smart Bike Light App</div>
 <div class="menu">
   <img width="150" height="224" src="assets/flashlight.svg" alt="Skateboard" title="Skateboard" class="loaded" />
-
-  <button mat-flat-button (click)="bleService.scanAndConnect()">scan and connect</button>
-  <button mat-flat-button *ngIf="isPaired" (click)="bleService.connectToDevice()">connect to paired</button>
+  Devices:
+  <div>
+    <button *ngFor="let device of devices | keyvalue" class="scan-result" (click)="connect(device.key)">
+      {{ device.key }} - battery: {{ device.value.getBatteryLevel() }} %
+    </button>
+  </div>
 </div>

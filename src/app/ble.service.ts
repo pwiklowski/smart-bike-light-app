@@ -38,7 +38,12 @@ export class BleService {
   CHAR_UUID_BACK_LIGHT_MODE = '10c96912-75a0-e2a0-fe48-125237297f2c';
   CHAR_UUID_BACK_LIGHT_SETTING = '10c96913-75a0-e2a0-fe48-125237297f2c';
 
+  CHAR_UUID_FRONT_CONFIG = '10c96904-75a0-e2a0-fe48-125237297f2c';
+
   CHAR_UUID_BATTERY_LEVEL = '2a19';
+
+  lastMessageId = 0;
+  callbackMap = new Map<number, Function>();
 
   constructor(private ble: BLE) {}
 
@@ -82,10 +87,47 @@ export class BleService {
     );
   }
 
-  onConnected(device) {
+  async onConnected(device) {
     this.device = device;
     console.log('on connected');
     this.connected$.next(true);
+
+    let messageLength = -1;
+    let messageId = -1;
+    let message = new Uint8Array();
+    this.ble.startNotification(this.device.id, this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_CONFIG).subscribe(
+      (value) => {
+        if (messageLength === -1) {
+          let buffer = new DataView(value[0], 0);
+          messageId = buffer.getUint16(0, true);
+          messageLength = buffer.getUint16(2, true);
+
+          if (messageLength === 0) {
+            const callback = this.callbackMap.get(messageId);
+            callback(message);
+            this.callbackMap.delete(messageId);
+            messageLength = -1;
+            messageId = -1;
+            message = new Uint8Array();
+          }
+        } else {
+          message = new Uint8Array([...message, ...new Uint8Array(value[0])]);
+
+          if (messageLength === message.length) {
+            const callback = this.callbackMap.get(messageId);
+
+            callback(message);
+            this.callbackMap.delete(messageId);
+            messageLength = -1;
+            messageId = -1;
+            message = new Uint8Array();
+          }
+        }
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
   }
 
   onDisconnected(device) {
@@ -173,5 +215,14 @@ export class BleService {
   async getBatteryLevel() {
     let value = await this.getValue(this.SERVICE_BATTERY, this.CHAR_UUID_BATTERY_LEVEL);
     return value[0];
+  }
+
+  request(message, callback) {
+    const messageId = Uint8Array.of(this.lastMessageId << 8, this.lastMessageId & 0xff);
+    const request = new Uint8Array([...messageId, ...new TextEncoder().encode(JSON.stringify(message)), 0]);
+
+    this.callbackMap.set(this.lastMessageId, callback);
+    this.lastMessageId++;
+    this.ble.writeWithoutResponse(this.device.id, this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_CONFIG, request.buffer);
   }
 }

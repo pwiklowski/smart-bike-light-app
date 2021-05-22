@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { BLE } from '@ionic-native/ble/ngx';
-import { parseAdvertisingData, GapAdType } from './ble.utils';
 
 export enum LightAnimation {
   SOLID,
@@ -160,56 +159,52 @@ export class BleService {
     await this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_BACK_LIGHT_TOGGLE, value);
   }
 
-  async setFrontLightAnimation(animation: number) {
-    let value = Uint8Array.of(animation);
-    await this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_LIGHT_MODE, value);
+  async setFrontLightAnimation(setting: string) {
+    const payload = {
+      setting,
+    };
+    const response: any = await this.request({ url: '/config/front', value: payload });
+    return [response.setting, response.value.power, response.value.red, response.value.green, response.value.blue];
   }
 
-  async setBackLightAnimation(animation: number) {
-    let value = Uint8Array.of(animation);
-    await this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_BACK_LIGHT_MODE, value);
+  async setBackLightAnimation(setting: string) {
+    const payload = {
+      setting,
+    };
+    const response: any = await this.request({ url: '/config/back', value: payload });
+    return [response.setting, response.value.power, response.value.red, response.value.green, response.value.blue];
   }
 
   async setFrontLightAnimationParameters(power: number, red: number, green: number, blue: number) {
-    let value = Uint8Array.of(power, red, green, blue);
-    await this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_LIGHT_SETTING, value);
+    const payload = {
+      power,
+      red,
+      green,
+      blue,
+    };
+    const response: any = await this.request({ url: '/config/front', value: payload });
+    return [response.setting, response.value.power, response.value.red, response.value.green, response.value.blue];
   }
 
   async setBackLightAnimationParameters(power: number, red: number, green: number, blue: number) {
-    let value = Uint8Array.of(power, red, green, blue);
-    await this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_BACK_LIGHT_SETTING, value);
-  }
-
-  async getFrontLightAnimation() {
-    let value = await this.getValue(this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_LIGHT_MODE);
-    return value[0];
-  }
-
-  async getBackLightAnimation() {
-    let value = await this.getValue(this.SERVICE_LIGHT, this.CHAR_UUID_BACK_LIGHT_MODE);
-    return value[0];
+    const payload = {
+      power,
+      red,
+      green,
+      blue,
+    };
+    const response: any = await this.request({ url: '/config/back', value: payload });
+    return [response.setting, response.value.power, response.value.red, response.value.green, response.value.blue];
   }
 
   async getFrontLightAnimationParameters() {
-    let value = await this.getValue(this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_LIGHT_SETTING);
-
-    const power = value[0];
-    const red = value[1];
-    const green = value[2];
-    const blue = value[3];
-
-    return [power, red, green, blue];
+    const response: any = await this.request({ url: '/config/front' });
+    return [response.setting, response.value.power, response.value.red, response.value.green, response.value.blue];
   }
 
   async getBackLightAnimationParameters() {
-    let value = await this.getValue(this.SERVICE_LIGHT, this.CHAR_UUID_BACK_LIGHT_SETTING);
-
-    const power = value[0];
-    const red = value[1];
-    const green = value[2];
-    const blue = value[3];
-
-    return [power, red, green, blue];
+    const response: any = await this.request({ url: '/config/back' });
+    return [response.setting, response.value.power, response.value.red, response.value.green, response.value.blue];
   }
 
   async getBatteryLevel() {
@@ -217,12 +212,18 @@ export class BleService {
     return value[0];
   }
 
-  request(message, callback) {
-    const messageId = Uint8Array.of(this.lastMessageId << 8, this.lastMessageId & 0xff);
-    const request = new Uint8Array([...messageId, ...new TextEncoder().encode(JSON.stringify(message)), 0]);
+  request(message) {
+    return new Promise((resolve, reject) => {
+      const messageId = Uint8Array.of(this.lastMessageId << 8, this.lastMessageId & 0xff);
+      const request = new Uint8Array([...messageId, ...new TextEncoder().encode(JSON.stringify(message)), 0]);
 
-    this.callbackMap.set(this.lastMessageId, callback);
-    this.lastMessageId++;
-    this.ble.writeWithoutResponse(this.device.id, this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_CONFIG, request.buffer);
+      this.callbackMap.set(this.lastMessageId, (response) => {
+        const responseObject = JSON.parse(new TextDecoder().decode(response));
+        console.log(responseObject);
+        resolve(responseObject);
+      });
+      this.lastMessageId++;
+      this.ble.writeWithoutResponse(this.device.id, this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_CONFIG, request.buffer);
+    });
   }
 }

@@ -42,22 +42,11 @@ export class SettingsComponent implements OnInit {
     this.ngZone.run(async () => {
       await loading.present();
 
-      this.frontMode = await this.bleService.getFrontLightAnimation();
-      this.backMode = await this.bleService.getBackLightAnimation();
+      [this.frontMode, this.frontPower, this.frontRed, this.frontGreen, this.frontBlue] =
+        await this.bleService.getFrontLightAnimationParameters();
 
-      [
-        this.frontPower,
-        this.frontRed,
-        this.frontGreen,
-        this.frontBlue,
-      ] = await this.bleService.getFrontLightAnimationParameters();
-
-      [
-        this.backPower,
-        this.backRed,
-        this.backGreen,
-        this.backBlue,
-      ] = await this.bleService.getBackLightAnimationParameters();
+      [this.backMode, this.backPower, this.backRed, this.backGreen, this.backBlue] =
+        await this.bleService.getBackLightAnimationParameters();
 
       console.log(this.frontMode, this.frontPower, this.frontRed, this.frontGreen, this.frontBlue);
       console.log(this.backMode, this.backPower, this.backRed, this.backGreen, this.backBlue);

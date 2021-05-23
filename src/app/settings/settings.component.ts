@@ -12,13 +12,13 @@ import { LoadingController } from '@ionic/angular';
 export class SettingsComponent implements OnInit {
   animations: string[];
 
-  frontMode = 0;
+  frontMode: string;
   frontPower = 0;
   frontRed = 0;
   frontGreen = 0;
   frontBlue = 0;
 
-  backMode = 0;
+  backMode: string;
   backPower = 0;
   backRed = 0;
   backGreen = 0;

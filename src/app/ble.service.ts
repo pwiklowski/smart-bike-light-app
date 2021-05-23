@@ -149,14 +149,12 @@ export class BleService {
     return this.ble.writeWithoutResponse(this.device.id, serviceUuid, characteristicUuid, value.buffer);
   }
 
-  async setFrontLight(enabled: boolean) {
-    let value = Uint8Array.of(enabled ? 1 : 0);
-    await this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_FRONT_LIGHT_TOGGLE, value);
-  }
-
-  async setBackLight(enabled: boolean) {
-    let value = Uint8Array.of(enabled ? 1 : 0);
-    await this.setValue(this.SERVICE_LIGHT, this.CHAR_UUID_BACK_LIGHT_TOGGLE, value);
+  async setLight(enabled: boolean) {
+    if (enabled) {
+      await this.request({ url: '/on' });
+    } else {
+      await this.request({ url: '/off' });
+    }
   }
 
   async setFrontLightAnimation(setting: string) {

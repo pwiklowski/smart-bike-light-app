@@ -19,13 +19,11 @@ export class CurrentStateComponent implements OnInit {
   }
 
   async turnOn() {
-    await this.bleService.setFrontLight(true);
-    await this.bleService.setBackLight(true);
+    await this.bleService.setLight(true);
   }
 
   async turnOff() {
-    await this.bleService.setFrontLight(false);
-    await this.bleService.setBackLight(false);
+    await this.bleService.setLight(false);
   }
 
   async disconnect() {

@@ -1,0 +1,6 @@
+<h2>animation</h2>
+<ion-select [(ngModel)]="currentAnimation" interface="action-sheet" (ngModelChange)="onChange()">
+  <ion-select-option *ngFor="let animation of animations" [value]="animation">
+    {{ animation }}
+  </ion-select-option>
+</ion-select>

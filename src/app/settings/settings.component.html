@@ -9,152 +9,35 @@
   </ion-header>
   <ion-content fullscreen>
     <ion-list>
-      <ion-list-header>
-        <ion-label>Front Light</ion-label>
-      </ion-list-header>
+      <ng-container *ngFor="let light of lights">
+        <h1>{{ light.name }}</h1>
+        <app-animation-picker
+          [currentAnimation]="light.setting"
+          [animations]="light.settings"
+          (onAnimationChange)="onAnimationChanged(light.name, $event)"
+        ></app-animation-picker>
 
-      <ion-item>
-        <ion-label>Front light animation</ion-label>
-        <ion-select [(ngModel)]="frontMode" interface="action-sheet" (ngModelChange)="onFrontAnimationChanged($event)">
-          <ion-select-option *ngFor="let animation of animations; index as i" [value]="animation">
-            {{ animation }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-
-      <ion-item>
-        <ion-range
-          min="0"
-          max="1"
-          step="0.01"
-          snaps="true"
-          pin="true"
-          debounce="100"
-          [(ngModel)]="frontPower"
-          (ngModelChange)="updateFrontLightSettings($event)"
-        >
-          <ion-icon slot="start" size="small" name="sunny"></ion-icon>
-          <ion-icon slot="end" name="sunny"></ion-icon>
-        </ion-range>
-      </ion-item>
-      <ion-item>
-        <ion-range
-          min="0"
-          max="255"
-          step="1"
-          snaps="true"
-          pin="true"
-          debounce="100"
-          [(ngModel)]="frontRed"
-          (ngModelChange)="updateFrontLightSettings($event)"
-        >
-          <ion-icon slot="start" size="small" name="sunny"></ion-icon>
-          <ion-icon slot="end" name="sunny"></ion-icon>
-        </ion-range>
-      </ion-item>
-      <ion-item>
-        <ion-range
-          min="0"
-          max="255"
-          step="1"
-          snaps="true"
-          pin="true"
-          debounce="100"
-          [(ngModel)]="frontGreen"
-          (ngModelChange)="updateFrontLightSettings($event)"
-        >
-          <ion-icon slot="start" size="small" name="sunny"></ion-icon>
-          <ion-icon slot="end" name="sunny"></ion-icon>
-        </ion-range>
-      </ion-item>
-      <ion-item>
-        <ion-range
-          min="0"
-          max="255"
-          step="1"
-          snaps="true"
-          pin="true"
-          debounce="100"
-          [(ngModel)]="frontBlue"
-          (ngModelChange)="updateFrontLightSettings($event)"
-        >
-          <ion-icon slot="start" size="small" name="sunny"></ion-icon>
-          <ion-icon slot="end" name="sunny"></ion-icon>
-        </ion-range>
-      </ion-item>
-
-      <ion-list-header>
-        <ion-label>Back Light</ion-label>
-      </ion-list-header>
-      <ion-item>
-        <ion-label>Back light animation</ion-label>
-        <ion-select [(ngModel)]="backMode" interface="action-sheet" (ngModelChange)="onBackAnimationChanged($event)">
-          <ion-select-option *ngFor="let animation of animations; index as i" [value]="animation">
-            {{ animation }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-
-      <ion-item>
-        <ion-range
-          min="0"
-          max="1"
-          step="0.01"
-          snaps="true"
-          pin="true"
-          debounce="100"
-          [(ngModel)]="backPower"
-          (ngModelChange)="updateBackLightSettings($event)"
-        >
-          <ion-icon slot="start" size="small" name="sunny"></ion-icon>
-          <ion-icon slot="end" name="sunny"></ion-icon>
-        </ion-range>
-      </ion-item>
-      <ion-item>
-        <ion-range
-          min="0"
-          max="255"
-          step="1"
-          snaps="true"
-          pin="true"
-          debounce="100"
-          [(ngModel)]="backRed"
-          (ngModelChange)="updateBackLightSettings($event)"
-        >
-          <ion-icon slot="start" size="small" name="sunny"></ion-icon>
-          <ion-icon slot="end" name="sunny"></ion-icon>
-        </ion-range>
-      </ion-item>
-      <ion-item>
-        <ion-range
-          min="0"
-          max="255"
-          step="1"
-          snaps="true"
-          pin="true"
-          debounce="100"
-          [(ngModel)]="backGreen"
-          (ngModelChange)="updateBackLightSettings($event)"
-        >
-          <ion-icon slot="start" size="small" name="sunny"></ion-icon>
-          <ion-icon slot="end" name="sunny"></ion-icon>
-        </ion-range>
-      </ion-item>
-      <ion-item>
-        <ion-range
-          min="0"
-          max="255"
-          step="1"
-          snaps="true"
-          pin="true"
-          debounce="100"
-          [(ngModel)]="backBlue"
-          (ngModelChange)="updateBackLightSettings($event)"
-        >
-          <ion-icon slot="start" size="small" name="sunny"></ion-icon>
-          <ion-icon slot="end" name="sunny"></ion-icon>
-        </ion-range>
-      </ion-item>
+        <ng-container *ngIf="config[light.name]">
+          <ng-container *ngFor="let property of config[light.name].schema.properties | keyvalue">
+            <h2>{{ property.key }}</h2>
+            <ion-item>
+              <ion-range
+                min="{{ property.value.minimum }}"
+                max="{{ property.value.maximum }}"
+                step="1"
+                snaps="true"
+                pin="true"
+                debounce="100"
+                [(ngModel)]="config[light.name].value[property.key]"
+                (ngModelChange)="updateLightSettings(light.name, property.key, $event)"
+              >
+                <ion-icon slot="start" size="small" name="sunny"></ion-icon>
+                <ion-icon slot="end" name="sunny"></ion-icon>
+              </ion-range>
+            </ion-item>
+          </ng-container>
+        </ng-container>
+      </ng-container>
     </ion-list>
   </ion-content>
 </ion-app>

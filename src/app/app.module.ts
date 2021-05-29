@@ -18,9 +18,10 @@ import { MatSliderModule } from '@angular/material/slider';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { BLE } from '@ionic-native/ble/ngx';
+import { AnimationPickerComponent } from './settings/animation-picker/animation-picker.component';
 
 @NgModule({
-  declarations: [AppComponent, SettingsComponent, CurrentStateComponent, OnBoardingComponent],
+  declarations: [AppComponent, SettingsComponent, CurrentStateComponent, OnBoardingComponent, AnimationPickerComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

@@ -1,7 +1,6 @@
 import { Router } from '@angular/router';
-import { BleService, LightAnimation } from './../ble.service';
+import { BleService } from './../ble.service';
 import { Component, OnInit } from '@angular/core';
-import { EnumValues } from 'enum-values';
 
 @Component({
   selector: 'app-current-state',

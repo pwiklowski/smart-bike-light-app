@@ -2,14 +2,6 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { BLE } from '@ionic-native/ble/ngx';
 
-export enum LightAnimation {
-  SOLID,
-  PULSE,
-  SNAKE,
-  CHRISTMAS,
-  CHRISTMAS2,
-}
-
 @Injectable({
   providedIn: 'root',
 })
@@ -43,6 +35,8 @@ export class BleService {
 
   lastMessageId = 0;
   callbackMap = new Map<number, Function>();
+
+  lights: any; // TODO add type
 
   constructor(private ble: BLE) {}
 
@@ -91,6 +85,8 @@ export class BleService {
     console.log('on connected');
     this.connected$.next(true);
 
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
     let messageLength = -1;
     let messageId = -1;
     let message = new Uint8Array();
@@ -127,6 +123,8 @@ export class BleService {
         console.log(err);
       }
     );
+
+    this.lights = await this.getLights();
   }
 
   onDisconnected(device) {
@@ -157,52 +155,26 @@ export class BleService {
     }
   }
 
-  async setFrontLightAnimation(setting: string) {
+  async setLightAnimation(light: string, setting: string) {
     const payload = {
       setting,
     };
-    const response: any = await this.request({ url: '/config/front', value: payload });
-    return [response.setting, response.value.power, response.value.red, response.value.green, response.value.blue];
+    return await this.request({ url: `/config/${light}`, value: payload });
   }
 
-  async setBackLightAnimation(setting: string) {
+  async setLightAnimationParameters(light, property, value) {
     const payload = {
-      setting,
+      [property]: value,
     };
-    const response: any = await this.request({ url: '/config/back', value: payload });
-    return [response.setting, response.value.power, response.value.red, response.value.green, response.value.blue];
+    return await this.request({ url: `/config/${light}`, value: payload });
   }
 
-  async setFrontLightAnimationParameters(power: number, red: number, green: number, blue: number) {
-    const payload = {
-      power,
-      red,
-      green,
-      blue,
-    };
-    const response: any = await this.request({ url: '/config/front', value: payload });
-    return [response.setting, response.value.power, response.value.red, response.value.green, response.value.blue];
+  async getLightAnimationParameters(light: string) {
+    return await this.request({ url: `/config/${light}` });
   }
 
-  async setBackLightAnimationParameters(power: number, red: number, green: number, blue: number) {
-    const payload = {
-      power,
-      red,
-      green,
-      blue,
-    };
-    const response: any = await this.request({ url: '/config/back', value: payload });
-    return [response.setting, response.value.power, response.value.red, response.value.green, response.value.blue];
-  }
-
-  async getFrontLightAnimationParameters() {
-    const response: any = await this.request({ url: '/config/front' });
-    return [response.setting, response.value.power, response.value.red, response.value.green, response.value.blue];
-  }
-
-  async getBackLightAnimationParameters() {
-    const response: any = await this.request({ url: '/config/back' });
-    return [response.setting, response.value.power, response.value.red, response.value.green, response.value.blue];
+  async getLights() {
+    return this.request({ url: '/lights' });
   }
 
   async getBatteryLevel() {

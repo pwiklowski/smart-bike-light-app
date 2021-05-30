@@ -24,7 +24,7 @@
               <ion-range
                 min="{{ property.value.minimum }}"
                 max="{{ property.value.maximum }}"
-                step="1"
+                step="{{ getStepSize(property.value) }}"
                 snaps="true"
                 pin="true"
                 debounce="100"

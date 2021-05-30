@@ -56,4 +56,12 @@ export class SettingsComponent implements OnInit {
     console.log('updateLightSettings', light, property, $event);
     await this.bleService.setLightAnimationParameters(light, property, $event);
   }
+
+  getStepSize(property) {
+    if (property.maximum === 1) {
+      return 0.01;
+    } else {
+      return 1;
+    }
+  }
 }

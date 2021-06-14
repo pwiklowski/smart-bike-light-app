@@ -9,6 +9,7 @@ For more informations about Web Bluetooth API go to: https://github.com/WebBluet
 * automatic start/stop based on cadence/speed ant+ sensor
 * calculation of estimated battery life
 * custom config for animations
+* breake light 
 
 ## Screens
 

@@ -1,8 +1,14 @@
 # Smart Bike Light
 
-This respository contains companion app for Smart Bike Light (https://github.com/pwiklowski/smart-bike-light). Application is a PWA Angular application that uses Web Bluetooth API to control esp32 based device using BLE. It allows to turn light on/off, check battery level and set light settings.
+This respository contains companion app for Smart Bike Light (https://github.com/pwiklowski/smart-bike-light (based on ESP32 currenlty deprecated), https://github.com/pwiklowski/smart-bike-light-nrf52840 based on nrf52840). Application is a PWA Angular application that uses Web Bluetooth API to control esp32 based device using BLE. It allows to turn light on/off, check battery level and set light settings.
 
 For more informations about Web Bluetooth API go to: https://github.com/WebBluetoothCG/web-bluetooth
+
+# Plans
+
+* automatic start/stop based on cadence/speed ant+ sensor
+* calculation of estimated battery life
+* custom config for animations
 
 ## Screens
 
